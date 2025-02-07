@@ -22,8 +22,13 @@ server.on("connection", (ws) => {
       currentTime += data.time * 60; // Convert minutes to seconds
     } else if (data.type === "updateTime") {
       currentTime = data.time; // already in minutes
-    } else if (data.type === "clearTime") {
+    } else if (data.type === "clearTimer") {
       currentTime = 0;
+      server.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify({ type: "updateTime", time: currentTime }));
+        }
+      });
     } else if (data.type === "startTimer") {
       if (!timerInterval) {
         isRunning = true;

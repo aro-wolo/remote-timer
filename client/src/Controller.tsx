@@ -42,6 +42,15 @@ const Controller: React.FC = () => {
 		}
 	};
 
+	const clearTime = () => {
+		if (ws && ws.readyState === WebSocket.OPEN) {
+			ws.send(JSON.stringify({ type: "clearTimer" }));
+			setTime(0); // Clear the form
+		} else {
+			console.log("WebSocket is not open");
+		}
+	};
+
 	const toggleTimer = () => {
 		if (ws && ws.readyState === WebSocket.OPEN) {
 			if (isRunning) {
@@ -60,10 +69,13 @@ const Controller: React.FC = () => {
 		<div className="d-flex flex-column justify-content-center align-items-center vh-100">
 			<DisplayTime />
 			<div className="position-absolute bottom-0 w-100 d-flex justify-content-between p-3">
+				<button className="btn btn-lg btn-secondary flex-fill mx-1" onClick={() => clearTime()} title="Clear">
+					<i className="bi bi-eraser-fill"></i>
+				</button>
 				<button className="btn btn-lg btn-info flex-fill mx-1" onClick={() => sendTime(-1)} title="Decrease time">
 					<i className="bi bi-dash-circle"></i>
 				</button>
-				<button className="btn btn-lg btn-warning flex-fill mx-1" onClick={() => sendTime(1)} title="Increase time">
+				<button className="btn btn-lg btn-info flex-fill mx-1" onClick={() => sendTime(1)} title="Increase time">
 					<i className="bi bi-plus-circle"></i>
 				</button>
 				<button className={`btn btn-lg flex-fill mx-1 ${isRunning ? "btn-danger" : "btn-success"}`} onClick={toggleTimer} title={isRunning ? "Stop Timer" : "Start Timer"}>

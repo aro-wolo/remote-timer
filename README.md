@@ -1,5 +1,7 @@
 # Remote Timer
 
+![Image](https://github.com/user-attachments/assets/ac856850-aabc-41e5-9825-ee54e1557de7)
+
 A remote timer application that consists of a controller and a display. The controller allows you to set and update the timer, while the display shows the remaining time.
 
 ## Features
