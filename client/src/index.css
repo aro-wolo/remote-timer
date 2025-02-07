@@ -1,0 +1,41 @@
+@font-face {
+  font-family: "DigitalNumbers";
+  src: url("/DigitalNumbers-Regular.ttf") format("truetype");
+}
+
+.time-display {
+  font-size: 23vw;
+  font-family: 'DigitalNumbers' !important;
+}
+
+.bright-red {
+  color: #ff0000;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.bright-white {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.bright-green {
+  color: #00ff00;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.blink {
+  -webkit-animation: blink-animation 1s steps(1, start) infinite;
+  animation: blink-animation 1s steps(1, start) infinite;
+}
+
+@keyframes blink-animation {
+  50% {
+    visibility: hidden;
+  }
+}
+
+@-webkit-keyframes blink-animation {
+  50% {
+    visibility: hidden;
+  }
+}
