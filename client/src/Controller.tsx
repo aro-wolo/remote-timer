@@ -50,13 +50,13 @@ const Controller: React.FC = () => {
                     className="btn btn-secondary"
                     onClick={updateTime}
                 >
-                    Update
+                    <i className="bi bi-arrow-repeat"></i> Update
                 </button>
                 <button
                     className="btn btn-secondary"
                     onClick={sendTime}
                 >
-                    Add
+                    <i className="bi bi-plus-circle"></i> Add
                 </button>
             </div>
         </div>

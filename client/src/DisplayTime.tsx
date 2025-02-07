@@ -22,7 +22,7 @@ const DisplayTime: React.FC = () => {
                 }
                 const message = JSON.parse(messageData);
                 if (message.type === 'updateTime') {
-                    const currentTime = message.time 
+                    const currentTime = message.time
                     const lastUpdate = Date.now();
                     localStorage.setItem('time', JSON.stringify({ currentTime, lastUpdate }));
                     setTime(currentTime);
@@ -90,7 +90,7 @@ const DisplayTime: React.FC = () => {
     return (
         <div className="d-flex justify-content-center align-items-center vh-100">
             <div className={`text-center time-display ${getTimeColor(time)} `}>
-                {time > 0 ? formatTime(time) : <span>Time Up</span>}
+                {time > 0 ? formatTime(time) : <span >Time Up</span>}
             </div>
         </div>
     );
