@@ -3,9 +3,23 @@
   src: url("/DigitalNumbers-Regular.ttf") format("truetype");
 }
 
+body,
+html {
+  background-color: #000000;
+  height: 100%;
+  margin: 0;
+}
+
 .time-display {
   font-size: 23vw;
   font-family: 'DigitalNumbers' !important;
+}
+
+.time-display span {
+  font-size: 23vw;
+  font-family: Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+
 }
 
 .bright-red {
