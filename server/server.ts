@@ -3,8 +3,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const host = process.env.WS_HOST || "0.0.0.0";
-const port = process.env.WS_PORT ? parseInt(process.env.WS_PORT) : 8080;
+const host = "0.0.0.0"; // process.env.WS_HOST || ;
+const port = process.env.WS_PORT ? parseInt(process.env.WS_PORT) : 8085;
 
 const server = new WebSocketServer({ port, host });
 
@@ -26,7 +26,9 @@ server.on("connection", (ws) => {
       currentTime = 0;
       server.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify({ type: "updateTime", time: currentTime }));
+          client.send(
+            JSON.stringify({ type: "updateTime", time: currentTime }),
+          );
         }
       });
     } else if (data.type === "startTimer") {
@@ -36,7 +38,9 @@ server.on("connection", (ws) => {
           currentTime--;
           server.clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {
-              client.send(JSON.stringify({ type: "updateTime", time: currentTime }));
+              client.send(
+                JSON.stringify({ type: "updateTime", time: currentTime }),
+              );
             }
           });
         }, 1000);

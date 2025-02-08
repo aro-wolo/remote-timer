@@ -1,13 +1,14 @@
 {
   "name": "remote-timer-client",
   "version": "1.0.0",
-  "type": "module",
+  "type": "commonjs",
   "description": "A remote time that has a controller and a display",
-  "main": "websocket-server.ts",
+  "main": "server.ts",
   "scripts": {
-    "start": "ts-node websocket-server.ts",
-    "dev": "nodemon websocket-server.ts",
-    "lint": "eslint ."
+    "start": "ts-node server.ts",
+    "dev": "nodemon server.ts",
+    "lint": "eslint .",
+    "build": "tsc"
   },
   "dependencies": {
     "@types/ws": "^8.5.14",
