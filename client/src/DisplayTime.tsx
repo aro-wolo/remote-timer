@@ -67,11 +67,9 @@ const DisplayTime: React.FC = () => {
 	}, []);
 
 	useEffect(() => {
-		console.log(isRunning)
 		if (isRunning && time > 0) {
 			const timer = setInterval(() => {
 				setTime((prevTime) => {
-
 					const newTime = prevTime - 1;
 					if (newTime <= 0) {
 						clearInterval(timer);
@@ -79,7 +77,11 @@ const DisplayTime: React.FC = () => {
 					}
 					localStorage.setItem(
 						"time",
-						JSON.stringify({ currentTime: newTime, lastUpdate: Date.now(), isRunning })
+						JSON.stringify({
+							currentTime: newTime,
+							lastUpdate: Date.now(),
+							isRunning,
+						})
 					);
 					return newTime;
 				});
