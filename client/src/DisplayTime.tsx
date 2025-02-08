@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 
-const DisplayTime: React.FC = () => {
+interface DisplayTimeProps {
+	size: 1 | 2;
+}
+
+const DisplayTime: React.FC<DisplayTimeProps> = ({ size = 1 }) => {
 	const [time, setTime] = useState<number>(0);
 	const [isRunning, setIsRunning] = useState<boolean>(false); // New state for timer running status
 	const wsHost = import.meta.env.VITE_WS_HOST || "0.0.0.0";
@@ -115,11 +119,12 @@ const DisplayTime: React.FC = () => {
 	};
 
 	const getBlinkClass = (seconds: number) => {
-		return seconds < 30 ? "blink" : "";
+		return seconds < 30 ? `tfs-${size} blink` : `tfs-${size}`;
 	};
 
 	return (
-		<div className="d-flex justify-content-center align-items-center vh-100">
+		<div
+			className={`d-flex justify-content-center tfs-${size} align-items-center vh-100`}>
 			<div className={`text-center time-display ${getTimeColor(time)} `}>
 				{time > 0 ? formatTime(time) : <span>Time Up</span>}
 			</div>

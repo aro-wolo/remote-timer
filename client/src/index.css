@@ -10,16 +10,21 @@ html {
   margin: 0;
 }
 
+.tfs-1 {
+  font-size: 23vw !important;
+}
+
+.tfs-2 {
+  font-size: 10vw !important;
+}
+
 .time-display {
-  font-size: 23vw;
   font-family: 'DigitalNumbers' !important;
 }
 
 .time-display span {
-  font-size: 23vw;
   font-family: Arial, Helvetica, sans-serif;
   text-transform: uppercase;
-
 }
 
 .bright-red {
