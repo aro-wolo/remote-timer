@@ -125,7 +125,7 @@ const DisplayTime: React.FC<DisplayTimeProps> = ({ size = 1 }) => {
 	return (
 		<div
 			className={`d-flex justify-content-center tfs-${size} align-items-center vh-100`}>
-			<div className={`text-center time-display ${getTimeColor(time)} `}>
+			<div className={`text-center time-display  ${getTimeColor(time)} `}>
 				{time > 0 ? formatTime(time) : <span>Time Up</span>}
 			</div>
 		</div>

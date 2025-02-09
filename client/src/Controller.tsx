@@ -1,42 +1,32 @@
 import React, { useState, useEffect } from "react";
 import DisplayTime from "./DisplayTime";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 
 const Controller: React.FC = () => {
 	const [time, setTime] = useState<number>(0);
-	const [ws, setWs] = useState<WebSocket | null>(null);
 	const [isRunning, setIsRunning] = useState<boolean>(true);
-	const [isConnected, setIsConnected] = useState<boolean>(false);
 	const wsHost = import.meta.env.VITE_WS_HOST || "0.0.0.0";
 	const wsPort = import.meta.env.VITE_WS_PORT || 8085;
 	const wsUrl = `ws://${wsHost}:${wsPort}`;
 
+	const { sendMessage, lastMessage, readyState } = useWebSocket(wsUrl, {
+		shouldReconnect: () => true,
+		reconnectAttempts: 10,
+		reconnectInterval: 3000,
+	});
+
 	useEffect(() => {
-		const socket = new WebSocket(wsUrl);
-		setWs(socket);
+		if (lastMessage !== null) {
+			const messageData = lastMessage.data;
+			setTime(parseInt(messageData, 10));
+		}
+	}, [lastMessage]);
 
-		socket.onopen = () => {
-			setIsConnected(true);
-		};
-
-		socket.onclose = () => {
-			setIsConnected(false);
-		};
-
-		socket.onmessage = (event) => {
-			const data = JSON.parse(event.data);
-			if (data.type === "updateTime") {
-				setTime(data.time);
-			}
-		};
-
-		return () => {
-			socket.close();
-		};
-	}, [wsUrl]);
+	const isConnected = readyState === ReadyState.OPEN;
 
 	const sendTime = (increment: number) => {
-		if (ws && ws.readyState === WebSocket.OPEN) {
-			ws.send(JSON.stringify({ type: "addTime", time: increment }));
+		if (isConnected) {
+			sendMessage(JSON.stringify({ type: "addTime", time: increment }));
 			setTime(0); // Clear the form
 		} else {
 			console.log("WebSocket is not open");
@@ -44,8 +34,8 @@ const Controller: React.FC = () => {
 	};
 
 	const clearTime = () => {
-		if (ws && ws.readyState === WebSocket.OPEN) {
-			ws.send(JSON.stringify({ type: "clearTimer" }));
+		if (isConnected) {
+			sendMessage(JSON.stringify({ type: "clearTimer" }));
 			setTime(0); // Clear the form
 		} else {
 			console.log("WebSocket is not open");
@@ -53,12 +43,12 @@ const Controller: React.FC = () => {
 	};
 
 	const toggleTimer = () => {
-		if (ws && ws.readyState === WebSocket.OPEN) {
+		if (isConnected) {
 			if (isRunning) {
-				ws.send(JSON.stringify({ type: "pauseTimer" }));
+				sendMessage(JSON.stringify({ type: "pauseTimer" }));
 			} else {
-				ws.send(JSON.stringify({ type: "startTimer" }));
-				ws.send(JSON.stringify({ type: "updateTime", time }));
+				sendMessage(JSON.stringify({ type: "startTimer" }));
+				sendMessage(JSON.stringify({ type: "updateTime", time }));
 			}
 			setIsRunning(!isRunning);
 		} else {
