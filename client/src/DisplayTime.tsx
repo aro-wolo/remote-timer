@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 
 interface DisplayTimeProps {
 	size: 1 | 2;
@@ -6,104 +8,48 @@ interface DisplayTimeProps {
 
 const DisplayTime: React.FC<DisplayTimeProps> = ({ size = 1 }) => {
 	const [time, setTime] = useState<number>(0);
-	const [isRunning, setIsRunning] = useState<boolean>(false); // New state for timer running status
+	const [isRunning, setIsRunning] = useState<boolean>(false);
 	const wsHost = import.meta.env.VITE_WS_HOST || "0.0.0.0";
 	const wsPort = import.meta.env.VITE_WS_PORT || 8080;
 	const wsUrl = `ws://${wsHost}:${wsPort}`;
+	const { code } = useParams<{ code: string }>();
+
+	const { sendMessage, lastMessage, readyState } = useWebSocket(wsUrl, {
+		shouldReconnect: () => true, // Always attempt to reconnect
+		reconnectAttempts: 10, // Number of reconnection attempts
+		reconnectInterval: 3000, // Interval between reconnection attempts (in milliseconds)
+	});
 
 	useEffect(() => {
-		const socket = new WebSocket(wsUrl);
-
-		socket.onopen = () => {
-			console.log("Connected to WebSocket server");
-		};
-
-		socket.onclose = () => {
-			console.log("Disconnected from WebSocket server");
-		};
-
-		socket.onmessage = async (event) => {
-			if (socket.readyState === WebSocket.OPEN) {
-				let messageData = event.data;
-				if (messageData instanceof Blob) {
-					messageData = await messageData.text();
-				}
-				const message = JSON.parse(messageData);
-				if (message.type === "updateTime") {
-					const currentTime = message.time;
-					const lastUpdate = Date.now();
-					localStorage.setItem(
-						"time",
-						JSON.stringify({ currentTime, lastUpdate, isRunning })
-					);
-					setTime(currentTime);
-				} else if (message.type === "startTimer") {
-					setIsRunning(true);
-					localStorage.setItem("isRunning", "true");
-				} else if (message.type === "pauseTimer") {
-					setIsRunning(false);
-					localStorage.setItem("isRunning", "false");
-				}
+		if (readyState === ReadyState.OPEN && code) {
+			sendMessage(JSON.stringify({ type: "joinRoom", roomCode: code }));
+		}
+	}, [readyState, code, sendMessage]);
+	useEffect(() => {
+		if (lastMessage !== null) {
+			const messageData = lastMessage.data;
+			const message = JSON.parse(messageData);
+			if (message.type === "updateTime" && message.roomCode == code) {
+				const currentTime = message.time;
+				setTime(currentTime);
+			} else if (message.type === "startTimer" && message.roomCode == code) {
+				setIsRunning(true);
+			} else if (message.type === "pauseTimer" && message.roomCode == code) {
+				setIsRunning(false);
 			}
-		};
-
-		return () => {
-			if (
-				socket.readyState === WebSocket.OPEN ||
-				socket.readyState === WebSocket.CONNECTING
-			) {
-				socket.close();
-			}
-		};
-	}, []);
-
-	useEffect(() => {
-		const storedTime = localStorage.getItem("time");
-		const storedIsRunning = localStorage.getItem("isRunning");
-		if (storedTime) {
-			const { currentTime, lastUpdate } = JSON.parse(storedTime);
-			const elapsedTime = Math.floor((Date.now() - lastUpdate) / 1000);
-			setTime(Math.max(currentTime - elapsedTime, 0));
 		}
-		if (storedIsRunning) {
-			setIsRunning(storedIsRunning === "true");
-		}
-	}, []);
-
-	useEffect(() => {
-		if (isRunning && time > 0) {
-			const timer = setInterval(() => {
-				setTime((prevTime) => {
-					const newTime = prevTime - 1;
-					if (newTime <= 0) {
-						clearInterval(timer);
-						return 0;
-					}
-					localStorage.setItem(
-						"time",
-						JSON.stringify({
-							currentTime: newTime,
-							lastUpdate: Date.now(),
-							isRunning,
-						})
-					);
-					return newTime;
-				});
-			}, 1000);
-			return () => clearInterval(timer);
-		}
-	}, [isRunning, time]);
+	}, [lastMessage]);
 
 	const formatTime = (seconds: number) => {
-		const mins = Math.floor((seconds % 3600) / 60)
-			.toString()
-			.padStart(2, "0");
-		const secs = (seconds % 60).toString().padStart(2, "0");
+		const minutes = Math.floor(seconds / 60);
+		const remainingSeconds = seconds % 60;
+		const blinkClass = getBlinkClass(seconds);
+
 		return (
 			<>
-				{mins}
-				<span className={getBlinkClass(seconds)}>:</span>
-				{secs}
+				{minutes}
+				<span className={blinkClass}>:</span>
+				{remainingSeconds.toString().padStart(2, "0")}
 			</>
 		);
 	};
@@ -125,7 +71,10 @@ const DisplayTime: React.FC<DisplayTimeProps> = ({ size = 1 }) => {
 	return (
 		<div
 			className={`d-flex justify-content-center tfs-${size} align-items-center vh-100`}>
-			<div className={`text-center time-display  ${getTimeColor(time)} `}>
+			<div
+				className={`text-center time-display ${getTimeColor(time)} ${
+					isRunning ? "" : "time-pause"
+				}`}>
 				{time > 0 ? formatTime(time) : <span>Time Up</span>}
 			</div>
 		</div>

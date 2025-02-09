@@ -10,6 +10,16 @@ html {
   margin: 0;
 }
 
+.mono-font {
+  font-size: 40px;
+  font-family: 'Courier New', Courier, monospace;
+  letter-spacing: 2px;
+}
+
+a.mono-font {
+  text-decoration: none;
+}
+
 .tfs-1 {
   font-size: 26vw !important;
   line-height: 1;
@@ -25,14 +35,12 @@ html {
 }
 
 .time-display span {
-  /* font-size: 23vw !important; */
   font-family: Arial, Helvetica, sans-serif;
   text-transform: uppercase;
-  transform: none;
 }
 
 .bright-red {
-  color: #ff0000;
+  color: #f14545;
   text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
 }
 
@@ -47,18 +55,42 @@ html {
 }
 
 .blink {
-  -webkit-animation: blink-animation 1s steps(1, start) infinite;
   animation: blink-animation 1s steps(1, start) infinite;
 }
 
 @keyframes blink-animation {
   50% {
-    visibility: hidden;
+    opacity: 0;
   }
 }
 
-@-webkit-keyframes blink-animation {
+.lock-icon {
+  transition: transform 0.3s ease, color 0.3s ease;
+  display: inline-block;
+  transform-origin: center;
+}
+
+.locked {
+  color: rgb(22, 228, 22);
+  transform: rotate(0deg) scale(1);
+}
+
+.unlocked {
+  color: orange;
+  transform: rotate(20deg) scale(1.2);
+  animation: unlock-bounce 0.3s ease-out;
+}
+
+@keyframes unlock-bounce {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+
   50% {
-    visibility: hidden;
+    transform: rotate(15deg) scale(1.1);
+  }
+
+  100% {
+    transform: rotate(20deg) scale(1.2);
   }
 }

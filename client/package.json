@@ -13,6 +13,7 @@
 	"dependencies": {
 		"dotenv": "^16.4.7",
 		"react": "^19.0.0",
+		"react-bootstrap": "^2.10.9",
 		"react-dom": "^19.0.0",
 		"react-router-dom": "^7.1.5",
 		"react-use-websocket": "^4.13.0"
@@ -22,6 +23,7 @@
 		"@types/dotenv": "^6.1.1",
 		"@types/node": "^22.13.1",
 		"@types/react": "^19.0.8",
+		"@types/react-bootstrap": "^0.32.37",
 		"@types/react-dom": "^19.0.3",
 		"@vitejs/plugin-react": "^4.3.4",
 		"eslint": "^9.19.0",
