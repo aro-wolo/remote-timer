@@ -10,7 +10,6 @@ const Controller: React.FC = () => {
 	const wsPort = import.meta.env.VITE_WS_PORT || 8085;
 	const wsUrl = `ws://${wsHost}:${wsPort}`;
 
-	console.log(isRunning);
 	useEffect(() => {
 		const socket = new WebSocket(wsUrl);
 		setWs(socket);
