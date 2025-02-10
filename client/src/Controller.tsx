@@ -7,7 +7,7 @@ const Controller: React.FC = () => {
 	const [isRunning, setIsRunning] = useState<boolean>(true);
 	const wsHost = import.meta.env.VITE_WS_HOST || "0.0.0.0";
 	const wsPort = import.meta.env.VITE_WS_PORT || 8085;
-	const wsUrl = `ws://${wsHost}:${wsPort}`;
+	const wsUrl = `${import.meta.env.VITE_WS_PROTOCOL}://${wsHost}:${wsPort}`;
 	const { code } = useParams<{ code: string }>();
 
 	const { sendMessage, readyState } = useWebSocket(wsUrl, {

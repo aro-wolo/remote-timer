@@ -11,7 +11,7 @@ const DisplayTime: React.FC<DisplayTimeProps> = ({ size = 1 }) => {
 	const [isRunning, setIsRunning] = useState<boolean>(false);
 	const wsHost = import.meta.env.VITE_WS_HOST || "0.0.0.0";
 	const wsPort = import.meta.env.VITE_WS_PORT || 8080;
-	const wsUrl = `ws://${wsHost}:${wsPort}`;
+	const wsUrl = `${import.meta.env.VITE_WS_PROTOCOL}://${wsHost}:${wsPort}`;
 	const { code } = useParams<{ code: string }>();
 
 	const { sendMessage, lastMessage, readyState } = useWebSocket(wsUrl, {

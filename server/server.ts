@@ -1,12 +1,30 @@
 import { WebSocketServer, WebSocket } from "ws";
 import dotenv from "dotenv";
+import fs from "fs";
+import http from "http";
+import https from "https";
 
 dotenv.config();
 
 const host = process.env.WS_HOST || "0.0.0.0";
 const port = process.env.WS_PORT ? parseInt(process.env.WS_PORT) : 8085;
 
-const server = new WebSocketServer({ port, host });
+let server: http.Server | https.Server;
+let wss: WebSocketServer;
+
+if (process.env.SERVER_CERT && process.env.SERVER_KEY) {
+  console.log("SSL certificates detected. Using WSS.");
+  const options = {
+    cert: fs.readFileSync(process.env.SERVER_CERT),
+    key: fs.readFileSync(process.env.SERVER_KEY),
+  };
+  server = https.createServer(options);
+  wss = new WebSocketServer({ server });
+} else {
+  console.log("No SSL certificates found. Using WS.");
+  server = http.createServer();
+  wss = new WebSocketServer({ server });
+}
 
 interface Room {
   currentTime: number;
@@ -17,7 +35,7 @@ interface Room {
 
 const rooms: { [key: string]: Room } = {};
 
-server.on("connection", (ws) => {
+wss.on("connection", (ws) => {
   console.log("New client connected");
 
   ws.on("message", (message) => {
@@ -45,11 +63,11 @@ server.on("connection", (ws) => {
 
       switch (type) {
         case "addTime":
-          room.currentTime += time * 60; // Convert minutes to seconds
+          room.currentTime += time * 60;
           break;
 
         case "updateTime":
-          room.currentTime = Math.max(0, time); // Ensure non-negative time
+          room.currentTime = Math.max(0, time);
           break;
 
         case "clearTimer":
@@ -79,8 +97,8 @@ server.on("connection", (ws) => {
           break;
 
         default:
-          ws.send(JSON.stringify({ error: `unhandled tpye: ${type}` }));
-        //return;
+          ws.send(JSON.stringify({ error: `Unhandled type: ${type}` }));
+          return;
       }
 
       broadcastUpdate(room, roomCode);
@@ -122,4 +140,11 @@ function broadcastUpdate(room: Room, roomCode: string) {
   });
 }
 
-console.log(`WebSocket server is running on ws://${host}:${port}`);
+// Start the server
+server.listen(port, host, () => {
+  console.log(
+    `WebSocket server is running on ${
+      process.env.SERVER_CERT ? "wss" : "ws"
+    }://${host}:${port}`,
+  );
+});
